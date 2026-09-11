@@ -273,14 +273,133 @@ win.webContents.on('dom-ready', () => {
     }
 }
 
+function getGeminiPath() {
+    if (os.platform() === 'win32') {
+        const base = path.join(process.env.LOCALAPPDATA || '', 'Google', 'Gemini');
+        if (fs.existsSync(base)) {
+            const dirs = fs.readdirSync(base).filter(f => f.startsWith('app-') && fs.statSync(path.join(base, f)).isDirectory());
+            if (dirs.length > 0) {
+                dirs.sort();
+                return path.join(base, dirs[dirs.length - 1], 'resources', 'app.asar');
+            }
+        }
+    }
+    return null;
+}
+
+async function patchGemini(asarPath, isRestore) {
+    if (!asarPath || !fs.existsSync(asarPath)) {
+        console.log(yellow(`[?] Target bypass: Gemini Desktop App not found.`));
+        return;
+    }
+    console.log(blue(`\n[✓] Target locked: Gemini App located at ${asarPath}`));
+    
+    const backupPath = asarPath + '.bak';
+    if (isRestore) {
+        if (!fs.existsSync(backupPath)) {
+            console.log(yellow('[!] Alert: Backup missing. Cannot revert Gemini core.'));
+            return;
+        }
+        const spinner = ora('Reverting Gemini ASAR core to factory state...').start();
+        try {
+            fs.copyFileSync(backupPath, asarPath);
+            spinner.succeed('Gemini successfully reverted.');
+        } catch (e) {
+            spinner.fail('Critical failure during ASAR restoration.');
+            console.error(red(e.message));
+        }
+        return;
+    }
+
+    const spinner = ora('Acquiring write permissions & establishing backup...').start();
+    try {
+        fs.accessSync(path.dirname(asarPath), fs.constants.W_OK);
+        if (!fs.existsSync(backupPath)) {
+            fs.copyFileSync(asarPath, backupPath);
+        }
+    } catch (e) {
+        spinner.fail('Access Denied.');
+        console.error(red('\n[!] OS Exception: ' + e.message));
+        return;
+    }
+    
+    const extractDir = path.join(path.dirname(asarPath), 'app-extracted-rtl-temp');
+    spinner.text = 'Decrypting and unpacking Gemini ASAR core...';
+    try {
+        if (fs.existsSync(extractDir)) {
+            fs.rmSync(extractDir, { recursive: true, force: true });
+        }
+        asar.extractAll(asarPath, extractDir);
+    } catch (e) {
+        spinner.fail('Core unpacking failed.');
+        console.error(red(e.message));
+        return;
+    }
+
+    spinner.text = 'Injecting Unified RTL module into Gemini...';
+    try {
+        const preloadPath = path.join(extractDir, 'src', 'preload.js');
+        if (!fs.existsSync(preloadPath)) {
+            throw new Error('src/preload.js missing. The target architecture is incompatible.');
+        }
+
+        let preloadCode = fs.readFileSync(preloadPath, 'utf8');
+        
+        if (preloadCode.includes('/* ANTIGRAVITY PRO RTL PATCH */')) {
+            spinner.succeed('Gemini is already operating on the patched architecture.');
+            fs.rmSync(extractDir, { recursive: true, force: true });
+            return;
+        }
+
+        const idePayloadPath = path.join(__dirname, 'ide-payload.js');
+        const ideCode = fs.readFileSync(idePayloadPath, 'utf8');
+
+        const fontPath = path.join(__dirname, 'Vazirmatn-Variable.woff2');
+        let fontBase64 = '';
+        if (fs.existsSync(fontPath)) {
+            fontBase64 = fs.readFileSync(fontPath).toString('base64');
+        }
+        
+        let injectedScript = ideCode.replace(/__FONT_BASE64__/g, fontBase64);
+
+        const payload = `\n/* ANTIGRAVITY PRO RTL PATCH */
+window.addEventListener('DOMContentLoaded', () => {
+    try {
+        ${injectedScript}
+    } catch(e) {
+        console.error("Failed to inject RTL features:", e);
+    }
+});`;
+
+        preloadCode += payload;
+        fs.writeFileSync(preloadPath, preloadCode);
+    } catch (e) {
+        spinner.fail('Module injection failed.');
+        console.error(red(e.message));
+        if (fs.existsSync(extractDir)) fs.rmSync(extractDir, { recursive: true, force: true });
+        return;
+    }
+
+    spinner.text = 'Rebuilding Gemini ASAR package...';
+    try {
+        await asar.createPackage(extractDir, asarPath);
+        fs.rmSync(extractDir, { recursive: true, force: true });
+        spinner.succeed('★ Gemini App successfully overhauled!');
+    } catch (e) {
+        spinner.fail('Failed to reconstruct the Gemini package.');
+        console.error(red(e.message));
+    }
+}
+
 async function main() {
     console.log(green('\n⚡ Initializing Antigravity Pro RTL Injector...'));
     
     let standardPath = getStandardPath();
     let idePath = getIDEPath();
+    let geminiPath = getGeminiPath();
     
-    if (!fs.existsSync(standardPath) && !fs.existsSync(idePath)) {
-        console.log(yellow(`[?] Automatic scanning failed to locate the Antigravity instances.`));
+    if (!fs.existsSync(standardPath) && !fs.existsSync(idePath) && !geminiPath) {
+        console.log(yellow(`[?] Automatic scanning failed to locate the applications.`));
         const response = await prompts({
             type: 'text',
             name: 'customPath',
@@ -299,6 +418,7 @@ async function main() {
     } else {
         await patchIDE(idePath, isRestore);
         await patchStandard(standardPath, isRestore);
+        await patchGemini(geminiPath, isRestore);
     }
     
     console.log(green(bold('\n⚡ Master execution completed. Reboot your applications to initialize the new UI.\n')));

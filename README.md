@@ -1,15 +1,15 @@
 # Antigravity Pro RTL Patcher 🚀
 
-A powerful, universal Right-to-Left (RTL) and UI patcher explicitly designed for the **Antigravity ecosystem** (both Antigravity IDE and Standard Antigravity App). 
-This tool seamlessly injects a high-performance, native-feeling RTL layout engine and a Pro Settings Widget directly into the application.
+A powerful, universal Right-to-Left (RTL) and UI patcher explicitly designed for the **Antigravity ecosystem** (Antigravity IDE, Standard Antigravity App) AND the official **Google Gemini Desktop App**. 
+This tool seamlessly injects a high-performance, native-feeling RTL layout engine and a Pro Settings Widget directly into the applications.
 
 [Read in Persian / راهنمای فارسی](#راهنمای-فارسی-persian-documentation)
 
 ## ✨ Key Features
 * **Zero-Delay RTL Engine**: Utilizes an optimized `MutationObserver` mapped to screen refresh rates (`requestAnimationFrame`) to instantly align text without any visual flickering or delay.
-* **Pro UI Settings Widget**: Injects a modern floating menu inside Antigravity, allowing you to change fonts, font sizes, line heights, and RTL toggles on the fly.
-* **Custom Font Injection**: Safely embeds custom fonts like `Vazirmatn`, `IRANSans`, `Shabnam`, and local OS fonts directly into the editor's secure webviews.
-* **Universal Compatibility**: Dynamically unpacks and repacks Antigravity's `.asar` packages, safely injecting the payload into the core execution flow.
+* **Pro UI Settings Widget**: Injects a modern floating menu inside Antigravity and Gemini, allowing you to change fonts, font sizes, line heights, and RTL toggles on the fly.
+* **Custom Font Injection**: Safely embeds custom fonts like `Vazirmatn`, `IRANSans`, `Shabnam`, and local OS fonts directly into the editor's secure webviews without breaking native English fonts and numbers (`unicode-range` optimized).
+* **Universal Compatibility**: Dynamically unpacks and repacks `.asar` packages for Antigravity and the Google Gemini Desktop App, safely injecting the payload into the core execution flow.
 
 ## ⚙️ Installation & Usage
 You can install this tool globally directly from GitHub without manually downloading the source code:
@@ -20,7 +20,7 @@ Once installed, simply run the following command anywhere in your terminal:
 ```bash
 antigravity-rtl
 ```
-*(To restore Antigravity to its original factory state, run `antigravity-rtl --restore`)*
+*(To restore applications to their original factory state, run `antigravity-rtl --restore`)*
 
 ## 🤝 Acknowledgements
 This project was heavily rebuilt, modernized, and expanded into a Universal Injector with a highly optimized Pro UI exclusively for the Antigravity ecosystem. The foundational concept and initial injection logic were inspired by the open-source repository [mmnaderi/antigravity-rtl](https://github.com/mmnaderi/antigravity-rtl). 
@@ -29,13 +29,13 @@ This project was heavily rebuilt, modernized, and expanded into a Universal Inje
 
 # راهنمای فارسی (Persian Documentation) 🇮🇷
 
-پچر هوشمند **Antigravity Pro RTL** یک ابزار قدرتمند اختصاصی برای اکوسیستم **Antigravity** (نسخه استاندارد و نسخه IDE) است که قابلیت راست‌چین (RTL) بی‌نقص و یک پنل تنظیمات پیشرفته را به هستهٔ این نرم‌افزار تزریق می‌کند.
+پچر هوشمند **Antigravity Pro RTL** یک ابزار قدرتمند اختصاصی برای اکوسیستم **Antigravity** (نسخه استاندارد و نسخه IDE) و همچنین **اپلیکیشن رسمی دسکتاپ Google Gemini** است که قابلیت راست‌چین (RTL) بی‌نقص و یک پنل تنظیمات پیشرفته را به هستهٔ این نرم‌افزارها تزریق می‌کند.
 
 ## ✨ ویژگی‌های کلیدی
 * **موتور RTL بدون پرش**: استفاده از `MutationObserver` فوق‌بهینه و همگام با `requestAnimationFrame` که باعث می‌شود متون در کمتر از ۱۶ میلی‌ثانیه (بدون هیچ پرش یا تأخیر بصری) در جهت درست قرار بگیرند.
-* **پنل تنظیمات پیشرفته (Pro UI)**: اضافه‌شدنِ یک ویجت حرفه‌ای و شناور در داخل محیط آنتی‌گراویتی که به شما اجازه می‌دهد در لحظه، فونت‌های فارسی و انگلیسی، سایز خطوط، ارتفاع متن و حالت RTL را تغییر دهید.
-* **تزریق امن فونت**: دور زدنِ محدودیت‌های امنیتی (CSP) برای اجرای مستقیم فونت‌های محبوب مانند `Vazirmatn`، `IRANSans` و غیره درون محیط بستهٔ نرم‌افزار.
-* **معماری کاملاً خودکار**: شناسایی خودکار نسخه‌های آنتی‌گراویتی، باز کردن پکیج‌های `.asar`، تزریق کدهای جاوااسکریپت و بسته‌بندیِ مجدد برنامه به صورت کاملاً اتوماتیک با یک دستور.
+* **پنل تنظیمات پیشرفته (Pro UI)**: اضافه‌شدنِ یک ویجت حرفه‌ای و شناور در داخل محیط برنامه‌ها که به شما اجازه می‌دهد در لحظه، فونت‌های فارسی و انگلیسی، سایز خطوط، ارتفاع متن و حالت RTL را تغییر دهید.
+* **تزریق امن فونت**: دور زدنِ محدودیت‌های امنیتی (CSP) برای اجرای مستقیم فونت‌های محبوب مانند `Vazirmatn`، `IRANSans` و غیره. (با استفاده از تکنیک `unicode-range` فونت و اعداد انگلیسی دست‌نخورده باقی می‌مانند).
+* **معماری کاملاً خودکار**: شناسایی خودکار نسخه‌های نصب‌شدهٔ آنتی‌گراویتی و Google Gemini، باز کردن پکیج‌های `.asar`، تزریق کدهای جاوااسکریپت و بسته‌بندیِ مجدد برنامه‌ها به صورت کاملاً اتوماتیک با یک دستور.
 
 ## ⚙️ نصب و راه‌اندازی
 شما می‌توانید این ابزار را به صورت یک دستورِ سراسری (Global) مستقیماً از گیت‌هاب روی سیستم خود نصب کنید (بدون نیاز به دانلود پوشه):
@@ -46,7 +46,7 @@ npm install -g arian13es/antigravity-pro-rtl
 ```bash
 antigravity-rtl
 ```
-*(برای بازگردانی آنتی‌گراویتی به حالت اولیه کارخانه، از دستور `antigravity-rtl --restore` استفاده کنید)*
+*(برای بازگردانی برنامه‌ها به حالت اولیه کارخانه، از دستور `antigravity-rtl --restore` استفاده کنید)*
 
 ## 🤝 قدردانی
 معماری این ابزار، پنل‌های رابط کاربری و موتورهای تزریق آن به صورت اختصاصی برای این نسخه بازنویسی و مدرن شده‌اند، اما ایدهٔ اولیه و کانسپت اصلیِ این پروژه با الهام از ریپوزیتوریِ متن‌بازِ [mmnaderi/antigravity-rtl](https://github.com/mmnaderi/antigravity-rtl) شکل گرفته است.
